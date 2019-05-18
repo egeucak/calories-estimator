@@ -30,6 +30,7 @@ const main = async () => {
         await food.getNutritionInfo();
         counter++;
     }
+    csvWriter.write().then(() => console.log("Done"));
 }
 
 main();
