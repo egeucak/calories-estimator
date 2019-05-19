@@ -13,7 +13,7 @@ const timeoutWait = (seconds) => {
     })
 }
 
-const main = async () => {
+const getNutritions = async () => {
     const startTime = Date.now();
     const labels = fs.readFileSync('./labels.txt', 'utf-8').split('\n').filter(label => label.length > 0);
     let counter = 0;
@@ -31,6 +31,10 @@ const main = async () => {
         counter++;
     }
     csvWriter.write().then(() => console.log("Done"));
+}
+
+const getIngredients = async () => {
+    
 }
 
 main();

@@ -95,8 +95,33 @@ class FoodModel {
         };
         return data;
     }
+
+    convertFromCsv() {
+
+    }
+
+    getIngredients() {
+        const baseUrl = 'https://api.textrazor.com';
+        const formData = new FormData();
+        formData.append('text', this.ingredients.join(' '));
+        formData.append('extractors', 'entities');
+        const headers = {
+            'X-TextRazor-Key': process.env.TEXT_RAZOR_APP_KEY,
+            'Content-Type': 'application/x-www-form-urlencoded'
+        };
+        axios({
+            method: 'post',
+            url: baseUrl,
+            data: formData,
+            config: { headers }
+        })
+        .then(data => data.data)
+        .then(data => data.response)
+        return baseUrl;
+    }
 }
 
 module.exports = {
     Food,
+    FoodModel
 };
