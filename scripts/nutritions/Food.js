@@ -1,5 +1,6 @@
 const axios = require('axios');
 const querystring = require('querystring');
+const request = require('request');
 
 const CsvWriter = require('./CsvWriter');
 class Food {
@@ -95,8 +96,72 @@ class FoodModel {
         };
         return data;
     }
+
+    convertFromCsv(foodData) {
+        this.name = foodData.name;
+        this.image = foodData.image;
+        this.ingredients = foodData.ingredients.split('|');
+        this.nutrients.calories = foodData.calories;
+        this.nutrients.carbs = foodData.carbs;
+        this.nutrients.fat = foodData.fat;
+        this.nutrients.protein = foodData.protein;
+        return this;
+    }
+
+    getIngredients() {
+        return new Promise((resolve, reject) => {
+            const baseUrl = 'http://api.textrazor.com';
+            const data = {
+                text: this.ingredients.join(' '),
+                extractors: 'entities'
+            };
+            const headers = {
+                'X-TextRazor-Key': process.env.TEXT_RAZOR_APP_KEY,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            };
+            new Promise((resolve, reject) => {
+                request.post(
+                    baseUrl,
+                    {
+                        headers,
+                        form: data
+                    }
+                , (err, resp, body) => {
+                    if(err) return reject(err);
+                    resolve(JSON.parse(body));
+                })
+            })
+            .then(data2 => data2.response)
+            .then(data3 => data3.entities)
+            .then((data) => {
+                const ingredients = this.filterIngredients(data);
+                this.ingredients = ingredients;
+                console.log(this.name);
+                resolve(ingredients);
+            })
+            .catch((err) => {
+                console.log("", err);
+            });
+        });
+    }
+
+    filterIngredients(dataArray) {
+        const ingredientSet = new Set();
+        const ingredients = dataArray.reduce((acc, curr, ind) => {
+            if (
+                curr.freebaseTypes
+                && (curr.freebaseTypes.indexOf('/food/food') > -1
+                || curr.freebaseTypes.indexOf('/food/ingredient') > -1)
+            ) {
+                acc.add(curr.entityId);
+            }
+            return acc;
+        }, ingredientSet);
+        return Array.from(ingredients);
+    }
 }
 
 module.exports = {
     Food,
+    FoodModel
 };

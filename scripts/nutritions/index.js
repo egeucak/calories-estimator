@@ -1,8 +1,9 @@
 require('dotenv').config();
 const fs = require('fs');
+const Papa = require('papaparse');
 
 const csvWriter = require('./CsvWriter');
-const { Food } = require('./Food');
+const { Food, FoodModel } = require('./Food');
 
 const timeoutWait = (seconds) => {
     return new Promise((resolve, reject) => {
@@ -13,7 +14,7 @@ const timeoutWait = (seconds) => {
     })
 }
 
-const main = async () => {
+const getNutritions = async () => {
     const startTime = Date.now();
     const labels = fs.readFileSync('./labels.txt', 'utf-8').split('\n').filter(label => label.length > 0);
     let counter = 0;
@@ -33,4 +34,25 @@ const main = async () => {
     csvWriter.write().then(() => console.log("Done"));
 }
 
-main();
+const getIngredients = async () => {
+    const foods = [];
+    Papa.parse(fs.createReadStream('data.csv'), {
+        delimiter: ',',
+        header: true,
+        step: (results) => {
+            const foodData = results.data[0];
+            const food = new FoodModel();
+            food.convertFromCsv(foodData);
+            foods.push(food);
+        },
+        complete: async () => {
+            for (let i = 0; i < foods.length; i++) {
+                const food = foods[i];
+                await food.getIngredients();
+            }
+            csvWriter.write();
+        }
+    });
+}
+
+getIngredients();
