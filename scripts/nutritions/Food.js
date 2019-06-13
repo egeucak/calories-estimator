@@ -141,6 +141,7 @@ class FoodModel {
             })
             .catch((err) => {
                 console.log("", err);
+                reject(err);
             });
         });
     }

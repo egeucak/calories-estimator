@@ -34,5 +34,5 @@ class CsvWriter {
         });
     }
 }
-const csvWriter = new CsvWriter('dinnerNamesING.csv');
+const csvWriter = new CsvWriter('dinnerNamesING4.csv');
 module.exports = csvWriter;

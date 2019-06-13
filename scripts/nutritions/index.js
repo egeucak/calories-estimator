@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: './.env' });
 const fs = require('fs');
 const Papa = require('papaparse');
 
@@ -39,7 +39,7 @@ const getNutritions = async () => {
 
 const getIngredients = async () => {
     const foods = [];
-    Papa.parse(fs.createReadStream('data.csv'), {
+    Papa.parse(fs.createReadStream('dinnerNamesING.csv'), {
         delimiter: ',',
         header: true,
         step: (results) => {
@@ -50,13 +50,18 @@ const getIngredients = async () => {
         },
         complete: async () => {
             for (let i = 0; i < foods.length; i++) {
-                const food = foods[i];
-                await food.getIngredients();
+                try {
+                    const food = foods[i];
+                    await food.getIngredients();
+                } catch(err) {
+                    await csvWriter.write();
+                    console.log(err);
+                    return;
+                }
             }
-            csvWriter.write();
         }
     });
 }
 
-// getIngredients();
-getNutritions();
+getIngredients();
+// getNutritions();
