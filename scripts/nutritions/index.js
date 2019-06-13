@@ -16,7 +16,10 @@ const timeoutWait = (seconds) => {
 
 const getNutritions = async () => {
     const startTime = Date.now();
-    const labels = fs.readFileSync('./labels.txt', 'utf-8').split('\n').filter(label => label.length > 0);
+    const labels = fs.readFileSync('./dinnerNames.csv', 'utf-8')
+        .split('\n')
+        .filter(label => label.length > 0)
+        .map(elm => elm.split(',')[1]); // If not csv, comment this line
     let counter = 0;
     for (let i = 0; i < labels.length; i++) {
         const foodName = labels[i];
@@ -55,4 +58,5 @@ const getIngredients = async () => {
     });
 }
 
-getIngredients();
+// getIngredients();
+getNutritions();

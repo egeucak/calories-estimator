@@ -34,5 +34,5 @@ class CsvWriter {
         });
     }
 }
-const csvWriter = new CsvWriter('data2.csv');
+const csvWriter = new CsvWriter('dinnerNamesING.csv');
 module.exports = csvWriter;
