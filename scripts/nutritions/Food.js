@@ -113,7 +113,8 @@ class FoodModel {
             const baseUrl = 'http://api.textrazor.com';
             const data = {
                 text: this.ingredients.join(' '),
-                extractors: 'entities'
+                extractors: 'entities',
+                languageOverride: 'eng'
             };
             const headers = {
                 'X-TextRazor-Key': process.env.TEXT_RAZOR_APP_KEY,
