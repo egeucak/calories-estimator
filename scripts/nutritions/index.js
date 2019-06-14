@@ -59,6 +59,7 @@ const getIngredients = async () => {
                     return;
                 }
             }
+            await csvWriter.write();
         }
     });
 }
